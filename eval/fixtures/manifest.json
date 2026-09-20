@@ -1,0 +1,167 @@
+{
+  "seed": 42,
+  "transforms": {
+    "stack_tables": [
+      "stacked_tables.xlsx"
+    ],
+    "add_title_rows": [
+      "titled_customers.xlsx"
+    ],
+    "add_footer": [
+      "sales_with_footer.csv"
+    ],
+    "rename_key": [
+      "orders_renamed.csv",
+      "customers.csv",
+      "employees.csv"
+    ],
+    "split_sheets": [
+      "attendance_split.xlsx"
+    ],
+    "drop_fk": [
+      "sales_by_region.csv",
+      "targets.csv"
+    ],
+    "change_granularity": [
+      "orders_daily.csv",
+      "monthly_budget.csv"
+    ],
+    "noisy_keys": [
+      "payroll_noisy.csv",
+      "employees.csv"
+    ],
+    "unrelated_pair": [
+      "weather.csv",
+      "headcount.csv"
+    ]
+  },
+  "ground_truth_fks": [
+    [
+      "orders.customer_id",
+      "customers.customer_id"
+    ],
+    [
+      "orders.employee_id",
+      "employees.employee_id"
+    ],
+    [
+      "order_items.order_id",
+      "orders.order_id"
+    ],
+    [
+      "order_items.product_id",
+      "products.product_id"
+    ],
+    [
+      "attendance.employee_id",
+      "employees.employee_id"
+    ],
+    [
+      "payroll.employee_id",
+      "employees.employee_id"
+    ],
+    [
+      "sales_by_region.month+region",
+      "targets.month+region"
+    ]
+  ],
+  "tables": {
+    "customers": {
+      "columns": [
+        "customer_id",
+        "customer_name",
+        "region",
+        "city"
+      ],
+      "n_rows": 24
+    },
+    "products": {
+      "columns": [
+        "product_id",
+        "product_name",
+        "category",
+        "unit_price"
+      ],
+      "n_rows": 12
+    },
+    "employees": {
+      "columns": [
+        "employee_id",
+        "employee_name",
+        "department",
+        "salary",
+        "joined_on",
+        "region"
+      ],
+      "n_rows": 30
+    },
+    "orders": {
+      "columns": [
+        "order_id",
+        "customer_id",
+        "employee_id",
+        "order_date",
+        "amount"
+      ],
+      "n_rows": 180
+    },
+    "order_items": {
+      "columns": [
+        "order_id",
+        "product_id",
+        "quantity"
+      ],
+      "n_rows": 371
+    },
+    "attendance": {
+      "columns": [
+        "employee_id",
+        "work_date",
+        "hours",
+        "status"
+      ],
+      "n_rows": 600
+    },
+    "payroll": {
+      "columns": [
+        "employee_id",
+        "pay_month",
+        "gross_pay",
+        "deductions"
+      ],
+      "n_rows": 180
+    },
+    "headcount": {
+      "columns": [
+        "month",
+        "department",
+        "headcount"
+      ],
+      "n_rows": 30
+    },
+    "targets": {
+      "columns": [
+        "month",
+        "region",
+        "target_revenue"
+      ],
+      "n_rows": 48
+    },
+    "sales_by_region": {
+      "columns": [
+        "month",
+        "region",
+        "revenue"
+      ],
+      "n_rows": 48
+    },
+    "weather": {
+      "columns": [
+        "station_code",
+        "city",
+        "rainfall_mm"
+      ],
+      "n_rows": 7
+    }
+  }
+}

@@ -1,0 +1,62 @@
+# HOLDOUT - deliberately not looked at while tuning. Same format as questions.yaml.
+
+- id: h01
+  fixture: sales
+  q: What was the total order amount in the first quarter of 2024?
+  kind: filter + aggregate
+  truth_sql: SELECT round(sum(amount),2) AS q1_revenue FROM orders WHERE CAST(order_date AS DATE) < DATE
+    '2024-04-01'
+  expect_rows:
+  - - 84552.61
+  tolerance: 0.01
+- id: h02
+  fixture: sales
+  q: How many employees are in each region?
+  kind: group-by aggregate
+  truth_sql: SELECT region, count(DISTINCT employee_id) AS n FROM employees GROUP BY 1 ORDER BY 1
+  expect_rows:
+  - - East
+    - 8.0
+  - - North
+    - 7.0
+  - - South
+    - 8.0
+  - - West
+    - 7.0
+  tolerance: 0.01
+- id: h03
+  fixture: sales
+  q: Which single product has sold the most units?
+  kind: top-N + join
+  truth_sql: SELECT p.product_name, round(sum(oi.quantity),0) AS units FROM order_items oi JOIN products
+    p ON oi.product_id=p.product_id GROUP BY 1 ORDER BY 2 DESC LIMIT 1
+  expect_rows:
+  - - Item 09
+    - 226.0
+  tolerance: 0.01
+- id: h04
+  fixture: composite
+  q: What is the average monthly target for the North region?
+  kind: filter + aggregate
+  truth_sql: SELECT round(avg(target_revenue),2) AS avg_target FROM targets WHERE region='North'
+  expect_rows:
+  - - 54625.0
+  tolerance: 0.01
+- id: h05
+  fixture: hr
+  q: What is the average net pay by department?
+  kind: noisy-key join
+  truth_sql: SELECT e.department, round(avg(p.gross_pay - p.deductions),2) AS net FROM payroll p JOIN
+    employees e ON p.employee_id=e.employee_id GROUP BY 1 ORDER BY 1
+  expect_rows:
+  - - Engineering
+    - 7236.5
+  - - Finance
+    - 7409.61
+  - - Operations
+    - 7170.44
+  - - People
+    - 6765.0
+  - - Sales
+    - 6623.78
+  tolerance: 0.01

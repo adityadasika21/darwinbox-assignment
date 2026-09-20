@@ -1,0 +1,305 @@
+# Ground truth is computed from eval/fixtures/clean by truth_sql, then frozen
+# into expect_rows. Questions are asked against the CORRUPTED fixtures, so a
+# passing answer means the messy-data layer did its job.
+# Regenerate with: python eval/make_questions.py
+
+- id: q01
+  fixture: sales
+  q: What is the total order amount across all orders?
+  kind: single-table aggregate
+  truth_sql: SELECT round(sum(amount),2) AS total_revenue FROM orders
+  expect_rows:
+  - - 390157.01
+  tolerance: 0.01
+- id: q02
+  fixture: sales
+  q: How many employees work in the Sales department?
+  kind: filter + aggregate
+  truth_sql: SELECT count(*) AS n FROM employees WHERE department='Sales'
+  expect_rows:
+  - - 6.0
+  tolerance: 0.01
+- id: q03
+  fixture: sales
+  q: What is the total order amount for each customer region?
+  kind: cross-file join
+  truth_sql: SELECT c.region, round(sum(o.amount),2) AS revenue FROM orders o JOIN customers c ON o.customer_id=c.customer_id
+    GROUP BY 1 ORDER BY 1
+  expect_rows:
+  - - East
+    - 98726.54
+  - - North
+    - 79772.7
+  - - South
+    - 109376.52
+  - - West
+    - 102281.25
+  tolerance: 0.01
+- id: q04
+  fixture: sales
+  q: What is the average employee salary?
+  kind: single-table aggregate
+  truth_sql: SELECT round(avg(salary),2) AS avg_salary FROM employees
+  expect_rows:
+  - - 101733.33
+  tolerance: 0.01
+- id: q05
+  fixture: sales
+  q: What is the average salary by department?
+  kind: group-by aggregate
+  truth_sql: SELECT department, round(avg(salary),2) AS avg_salary FROM employees GROUP BY 1 ORDER BY
+    1
+  expect_rows:
+  - - Engineering
+    - 100833.33
+  - - Finance
+    - 96500.0
+  - - Operations
+    - 121833.33
+  - - People
+    - 99166.67
+  - - Sales
+    - 90333.33
+  tolerance: 0.01
+- id: q06
+  fixture: sales
+  q: Which 3 customers have the highest total order amount?
+  kind: top-N + join
+  truth_sql: SELECT c.customer_name, round(sum(o.amount),2) AS revenue FROM orders o JOIN customers c
+    ON o.customer_id=c.customer_id GROUP BY 1 ORDER BY 2 DESC LIMIT 3
+  expect_rows:
+  - - Park Ltd
+    - 71470.42
+  - - Park Corp
+    - 31544.7
+  - - Nair Co
+    - 28393.25
+  tolerance: 0.01
+- id: q07
+  fixture: sales
+  q: Show total order amount by month
+  kind: trend over time
+  truth_sql: SELECT strftime(date_trunc('month', CAST(order_date AS DATE)), '%Y-%m-%d') AS month, round(sum(amount),2)
+    AS revenue FROM orders GROUP BY 1 ORDER BY 1
+  expect_rows:
+  - - '2024-01-01'
+    - 24677.91
+  - - '2024-02-01'
+    - 24329.41
+  - - '2024-03-01'
+    - 35545.29
+  - - '2024-04-01'
+    - 34423.4
+  - - '2024-05-01'
+    - 30389.58
+  - - '2024-06-01'
+    - 33620.94
+  - - '2024-07-01'
+    - 35513.68
+  - - '2024-08-01'
+    - 35081.06
+  - - '2024-09-01'
+    - 30070.3
+  - - '2024-10-01'
+    - 44582.52
+  - - '2024-11-01'
+    - 32213.58
+  - - '2024-12-01'
+    - 29709.34
+  tolerance: 0.01
+- id: q08
+  fixture: sales
+  q: What is the total order amount handled by each employee department?
+  kind: three-file join
+  truth_sql: SELECT e.department, round(sum(o.amount),2) AS revenue FROM orders o JOIN employees e ON
+    o.employee_id=e.employee_id GROUP BY 1 ORDER BY 1
+  expect_rows:
+  - - Engineering
+    - 77128.11
+  - - Finance
+    - 70242.09
+  - - Operations
+    - 62908.0
+  - - People
+    - 82189.47
+  - - Sales
+    - 97689.34
+  tolerance: 0.01
+- id: q09
+  fixture: sales
+  q: How many customers have never placed an order?
+  kind: anti-join
+  truth_sql: SELECT count(*) AS n FROM customers c WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.customer_id=c.customer_id)
+  expect_rows:
+  - - 4.0
+  tolerance: 0.01
+- id: q11
+  fixture: composite
+  q: Compare total revenue against total target for each region
+  kind: composite key
+  truth_sql: SELECT s.region, round(sum(s.revenue),2) AS revenue, round(sum(t.target_revenue),2) AS target
+    FROM sales_by_region s JOIN targets t ON s.month=t.month AND s.region=t.region GROUP BY 1 ORDER BY
+    1
+  expect_rows:
+  - - East
+    - 629463.06
+    - 688000.0
+  - - North
+    - 672113.02
+    - 655500.0
+  - - South
+    - 781690.35
+    - 683500.0
+  - - West
+    - 540405.05
+    - 536000.0
+  tolerance: 0.01
+- id: q12
+  fixture: attendance
+  q: What are the average hours worked per department?
+  kind: cross-file join
+  truth_sql: SELECT e.department, round(avg(a.hours),2) AS avg_hours FROM attendance a JOIN employees
+    e ON a.employee_id=e.employee_id GROUP BY 1 ORDER BY 1
+  expect_rows:
+  - - Engineering
+    - 7.94
+  - - Finance
+    - 7.64
+  - - Operations
+    - 7.75
+  - - People
+    - 7.84
+  - - Sales
+    - 7.59
+  tolerance: 0.01
+- id: q13
+  fixture: hr
+  q: What is the total gross pay and total deductions?
+  kind: single-table aggregate
+  truth_sql: SELECT round(sum(gross_pay),2) AS gross, round(sum(deductions),2) AS deductions FROM payroll
+  expect_rows:
+  - - 1545600.0
+    - 278208.0
+  tolerance: 0.01
+- id: q15
+  fixture: hr
+  q: What is the total gross pay by department?
+  kind: noisy-key join
+  truth_sql: SELECT e.department, round(sum(p.gross_pay),2) AS gross FROM payroll p JOIN employees e ON
+    p.employee_id=e.employee_id GROUP BY 1 ORDER BY 1
+  expect_rows:
+  - - Engineering
+    - 317700.0
+  - - Finance
+    - 325300.0
+  - - Operations
+    - 314800.0
+  - - People
+    - 297000.0
+  - - Sales
+    - 290800.0
+  tolerance: 0.01
+- id: q10
+  fixture: unrelated
+  kind: refusal (unrelated files)
+  q: Compare the average rainfall to the total headcount by department
+  expect: clarify
+- id: q16
+  fixture: sales
+  q: How many customers are in each region?
+  kind: group-by aggregate
+  truth_sql: SELECT region, count(*) AS n FROM customers GROUP BY 1 ORDER BY 1
+  expect_rows:
+  - - East
+    - 6.0
+  - - North
+    - 6.0
+  - - South
+    - 6.0
+  - - West
+    - 6.0
+  tolerance: 0.01
+- id: q17
+  fixture: sales
+  q: What is the largest single order amount?
+  kind: single-value
+  truth_sql: SELECT round(max(amount),2) AS biggest FROM orders
+  expect_rows:
+  - - 3960.62
+  tolerance: 0.01
+- id: q18
+  fixture: sales
+  q: Which region has the highest average order amount?
+  kind: comparison of groups
+  truth_sql: SELECT c.region, round(avg(o.amount),2) AS avg_order FROM orders o JOIN customers c ON o.customer_id=c.customer_id
+    GROUP BY 1 ORDER BY 2 DESC LIMIT 1
+  expect_rows:
+  - - South
+    - 2278.68
+  tolerance: 0.01
+- id: q19
+  fixture: messy
+  q: How many products are in each category?
+  kind: messy-file aggregate
+  truth_sql: SELECT category, count(*) AS n FROM products GROUP BY 1 ORDER BY 1
+  expect_rows:
+  - - Beverages
+    - 3.0
+  - - Hardware
+    - 3.0
+  - - Produce
+    - 3.0
+  - - Stationery
+    - 3.0
+  tolerance: 0.01
+- id: q20
+  fixture: granularity
+  q: Compare the monthly order total against the monthly budget
+  kind: derived granularity
+  truth_sql: WITH m AS (SELECT date_trunc('month', CAST(order_date AS DATE)) AS month, round(sum(amount),2)
+    AS revenue FROM orders GROUP BY 1) SELECT strftime(m.month, '%Y-%m-%d') AS month, m.revenue, b.budget
+    FROM m JOIN read_csv_auto('eval/fixtures/monthly_budget.csv') b ON m.month = CAST(b.budget_month AS
+    DATE) ORDER BY 1
+  expect_rows:
+  - - '2024-01-01'
+    - 24677.91
+    - 213000.0
+  - - '2024-02-01'
+    - 24329.41
+    - 78000.0
+  - - '2024-03-01'
+    - 35545.29
+    - 56000.0
+  - - '2024-04-01'
+    - 34423.4
+    - 239000.0
+  - - '2024-05-01'
+    - 30389.58
+    - 120000.0
+  - - '2024-06-01'
+    - 33620.94
+    - 112000.0
+  - - '2024-07-01'
+    - 35513.68
+    - 107000.0
+  - - '2024-08-01'
+    - 35081.06
+    - 85000.0
+  - - '2024-09-01'
+    - 30070.3
+    - 238000.0
+  - - '2024-10-01'
+    - 44582.52
+    - 76000.0
+  - - '2024-11-01'
+    - 32213.58
+    - 223000.0
+  - - '2024-12-01'
+    - 29709.34
+    - 239000.0
+  tolerance: 0.01
+- id: q14
+  fixture: sales
+  kind: refusal (no such column)
+  q: What is the total commission paid to each salesperson?
+  expect: clarify

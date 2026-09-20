@@ -1,0 +1,27 @@
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+node_modules/
+web/dist/
+sessions/
+eval/fixtures/*.xlsx
+eval/fixtures/*.csv
+eval/seeds/
+.DS_Store
+
+eval/fixtures/gov/
+
+# local tooling, not part of the deliverable
+.mcp.json
+eval/external.yaml
+web/e2e/smoke.png
+
+# local only: demo script, screenshot tooling
+docs/
+FDE_Assignment_Darwinbox.pdf
+.firebase/
+SPEC.md
+WRITEUP.md

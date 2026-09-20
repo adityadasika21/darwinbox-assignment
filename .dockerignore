@@ -1,0 +1,15 @@
+.git
+.venv
+.firebase
+.pytest_cache
+.ruff_cache
+node_modules
+web/node_modules
+web/dist
+sessions
+eval/fixtures
+eval/data
+docs
+*.pdf
+__pycache__
+**/__pycache__

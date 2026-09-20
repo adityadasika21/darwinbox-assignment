@@ -1,0 +1,41 @@
+# The API on Render's free instance type.
+#
+# Chosen for one property: when the 750 monthly instance-hours are gone the service
+# is suspended, not billed. Cloud Run's free tier is more generous but sits on a
+# project with billing enabled, so overage is charged instead of refused, and
+# Hugging Face now requires PRO for anything but a static Space.
+#
+# The cost of free is 512 MB and a fraction of a CPU, and a spin-down after 15
+# minutes of inactivity that costs about a minute on the next request. Ingestion of
+# a large workbook will be slow here in a way it is not on a real machine; the
+# bundled samples are small and fine. Run it locally for the fast path.
+services:
+  - type: web
+    name: darwinbox-assignment-api
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    # Sessions live in process memory, so there is exactly one instance by
+    # definition here -- the free plan does not scale, which for once is what we want.
+    healthCheckPath: /api/health
+    envVars:
+      - key: DARWINBOX_LLM
+        value: gemini
+      # Measured: ~140 MB of imports, then roughly 25x the file size to ingest, so a
+      # 5.9 MB CSV peaks near 300 MB. The local default of 100 MB would not fail an
+      # upload here, it would get the process OOM-killed and take every live session
+      # with it. 5 MB leaves room for one ingest to run while others sit idle.
+      - key: DARWINBOX_MAX_FILE_MB
+        value: "5"
+      # Sessions hold a DuckDB connection and their data until evicted, and a browser
+      # never says it has gone. Ten live sessions of bundled samples is roughly 150 MB
+      # on top of the baseline; half an hour is longer than anyone looks at a demo.
+      - key: DARWINBOX_MAX_SESSIONS
+        value: "10"
+      - key: DARWINBOX_SESSION_TTL
+        value: "1800"
+      # Set in the dashboard, not here: this file is in git.
+      # Free tier key from https://aistudio.google.com/apikey.
+      - key: GEMINI_API_KEY
+        sync: false

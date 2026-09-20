@@ -1,0 +1,47 @@
+[project]
+name = "darwinbox-assignment"
+version = "0.1.0"
+description = "Ask plain-English questions across several messy CSV/Excel files."
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "duckdb>=1.1",
+    "pandas>=2.2",
+    "openpyxl>=3.1",
+    "numpy>=1.26",
+    "sqlglot>=25.24",
+    "rank-bm25>=0.2.2",
+    "pydantic>=2.9",
+    "sse-starlette>=2.1",
+    "python-multipart>=0.0.12",
+    "httpx>=0.27",
+    "pyyaml>=6.0",
+    "charset-normalizer>=3.3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3", "ruff>=0.7"]
+# Vertex mode only. The API-key path, and every test, runs without it.
+cloud = ["google-auth>=2.35"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["backend"]
+include = ["darwinbox*"]
+
+[tool.pytest.ini_options]
+testpaths = ["backend/tests"]
+pythonpath = ["backend", "backend/tests"]
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["B008"]

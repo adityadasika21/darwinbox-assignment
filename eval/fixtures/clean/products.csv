@@ -1,0 +1,13 @@
+product_id,product_name,category,unit_price
+P-201,Item 01,Produce,209.36
+P-202,Item 02,Hardware,44.85
+P-203,Item 03,Stationery,92.04
+P-204,Item 04,Beverages,169.19
+P-205,Item 05,Produce,176.95
+P-206,Item 06,Hardware,172.47
+P-207,Item 07,Stationery,22.49
+P-208,Item 08,Beverages,160.57
+P-209,Item 09,Produce,135.86
+P-210,Item 10,Hardware,64.98
+P-211,Item 11,Stationery,118.25
+P-212,Item 12,Beverages,71.14

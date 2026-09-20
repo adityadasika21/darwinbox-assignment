@@ -1,0 +1,25 @@
+customer_id,customer_name,region,city
+C-101,Alvarez Ltd,South,Hyderabad
+C-102,Silva Ltd,East,Delhi
+C-103,Shah Co,West,Pune
+C-104,Park Ltd,North,Bengaluru
+C-105,Haddad Ltd,South,Pune
+C-106,Wei Ltd,East,Delhi
+C-107,Roy Co,West,Pune
+C-108,Park Ltd,North,Hyderabad
+C-109,Park Corp,South,Delhi
+C-110,Nair Co,East,Mumbai
+C-111,Menon Ltd,West,Hyderabad
+C-112,Haddad Corp,North,Mumbai
+C-113,Shah Ltd,South,Kolkata
+C-114,Rao Ltd,East,Pune
+C-115,Chen Ltd,West,Mumbai
+C-116,Frost Co,North,Mumbai
+C-117,Kumar Co,South,Chennai
+C-118,Park Ltd,East,Chennai
+C-119,Wei Co,West,Mumbai
+C-120,Frost Co,North,Delhi
+C-121,Wei Ltd,South,Hyderabad
+C-122,Ito Corp,East,Pune
+C-123,Ito Ltd,West,Chennai
+C-124,Silva Corp,North,Hyderabad

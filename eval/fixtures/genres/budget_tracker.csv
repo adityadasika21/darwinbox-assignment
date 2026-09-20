@@ -1,0 +1,11 @@
+Category,Item,Budget,Actual,Variance
+Housing,,,,
+,Rent,25000,25000,0
+,Electricity,3000,3450,-450
+,Internet,1200,1200,0
+Food,,,,
+,Groceries,12000,13800,-1800
+,Dining out,4000,2600,1400
+Transport,,,,
+,Fuel,6000,5400,600
+,Maintenance,2000,0,2000
